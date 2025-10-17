@@ -23,12 +23,5 @@ steps:
         from_secret: aws_secret_access_key
 
     commands:
-      # Configuration et synchronisation
-      # 1. Définit la région par défaut.
-      - export AWS_DEFAULT_REGION="us-east-1" # <--- METTEZ VOTRE RÉGION ICI (ex: eu-west-3)
-
-      # 2. Synchronise le contenu du dossier local (public/) vers le bucket S3.
-      # --delete : Supprime les fichiers dans S3 qui n'existent plus localement.
-      # --acl public-read : Rendre les fichiers publiquement accessibles.
-      # --exclude ".DS_Store" : Exclure les fichiers inutiles.
+      - export AWS_DEFAULT_REGION="us-east-1"
       - aws s3 sync public/ s3://restaurant-drone-bucket/ --delete --acl public-read --exclude ".DS_Store"
