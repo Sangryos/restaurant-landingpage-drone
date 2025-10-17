@@ -10,3 +10,17 @@ steps:
       <<: *hugo_env
     commands:
       - hugo --baseURL $BASE_URL
+      - ls public
+
+  - name: publish-website-s3
+    image: plugins/s3
+    settings:
+      bucket: restaurant-drone-bucket
+      region: us-east-1
+      source: public/**/*
+      target: /
+      acl: public-read
+      access_key:
+        from_secret: aws_access_key_id
+      secret_key:
+        from_secret: aws_secret_access_key
