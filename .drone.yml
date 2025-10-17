@@ -30,6 +30,7 @@ steps:
       - export AWS_DEFAULT_REGION="us-east-1"
       - export BUILD_TIMESTAMP=$(date +%Y%m%d-%H%M%S)
       - export ARCHIVE_NAME="hugo-build-${BUILD_TIMESTAMP}.tar.gz"
+      - pip install awscli
       - tar -czf $ARCHIVE_NAME public/
       - echo $ARCHIVE_NAME
       - aws s3 cp $ARCHIVE_NAME s3://restaurant-drone-releases-bucket/releases/
@@ -45,6 +46,7 @@ steps:
       - export AWS_DEFAULT_REGION="us-east-1"
       - export RELEASE_BUCKET="restaurant-drone-releases-bucket"
       - export SITE_BUCKET="restaurant-drone-bucket"
+      - pip install awscli
       - LATEST_RELEASE=$(aws s3 ls s3://${RELEASE_BUCKET}/releases/ --recursive | sort | tail -n 1 | awk '{print $4}')
       - if [ -z "$LATEST_RELEASE" ]; then echo "❌ No release found in S3 archive bucket!"; exit 1; fi
       - aws s3 cp s3://${RELEASE_BUCKET}/$LATEST_RELEASE ./release.tar.gz
