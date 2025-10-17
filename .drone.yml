@@ -28,7 +28,7 @@ steps:
     environment:
       <<: *env
     commands:
-      - yum install -y zip
+      - yum install -y gzip
       - yum install -y tar
       - tar -czf hugo-build-${CI_BUILD_NUMBER}.tar.gz public/
       - echo hugo-build-${CI_BUILD_NUMBER}.tar.gz
@@ -43,7 +43,7 @@ steps:
     environment:
       <<: *env
     commands:
-      - yum install -y zip
+      - yum install -y gzip
       - yum install -y tar
       - export AWS_DEFAULT_REGION="us-east-1"
       - LATEST_RELEASE=$(aws s3 ls s3://restaurant-drone-releases-bucket/releases/ --recursive | sort | tail -n 1 | awk '{print $4}')
