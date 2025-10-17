@@ -23,14 +23,13 @@ steps:
         - push
 
   - name: archive-release
-    image: amazon/aws-cli
+    image: alpine/git:latest
     environment:
       <<: *env
     commands:
       - export AWS_DEFAULT_REGION="us-east-1"
       - export BUILD_TIMESTAMP=$(date +%Y%m%d-%H%M%S)
       - export ARCHIVE_NAME="hugo-build-${BUILD_TIMESTAMP}.tar.gz"
-      - apk add --no-cache tar gzip
       - tar -czf $ARCHIVE_NAME public/
       - echo $ARCHIVE_NAME
       - aws s3 cp $ARCHIVE_NAME s3://restaurant-drone-releases-bucket/releases/
@@ -39,7 +38,7 @@ steps:
         - tag
 
   - name: publish-website-s3
-    image: amazon/aws-cli
+    image: alpine/git:latest
     environment:
       <<: *env
     commands:
@@ -49,8 +48,6 @@ steps:
       - LATEST_RELEASE=$(aws s3 ls s3://${RELEASE_BUCKET}/releases/ --recursive | sort | tail -n 1 | awk '{print $4}')
       - if [ -z "$LATEST_RELEASE" ]; then echo "❌ No release found in S3 archive bucket!"; exit 1; fi
       - aws s3 cp s3://${RELEASE_BUCKET}/$LATEST_RELEASE ./release.tar.gz
-      - apk update
-      - apk add --no-cache tar
       - mkdir release_content
       - tar -xzf release.tar.gz -C release_content --strip-components=1
       - ls release_content/
