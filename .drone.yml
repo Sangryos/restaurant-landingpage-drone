@@ -18,11 +18,10 @@ steps:
     commands:
       - hugo --baseURL $BASE_URL
       - ls public
-    trigger:
+    when:
       event:
         - tag
         - push
-
 ##### ARCHIVE RELEASE ######
   - name: archive-create
     image: alpine/git:latest
