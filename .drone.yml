@@ -6,8 +6,6 @@ env: &env
     from_secret: aws_access_key_id
   AWS_SECRET_ACCESS_KEY:
     from_secret: aws_secret_access_key
-  BUILD_TIMESTAMP: $(date +%Y%m%d-%H%M%S)
-  ARCHIVE_NAME: "hugo-build-${BUILD_TIMESTAMP}.tar.gz"
 
 kind: pipeline
 name: hugo-website
@@ -29,9 +27,8 @@ steps:
     environment:
       <<: *env
     commands:
-      - export
-      - tar -czf $ARCHIVE_NAME public/
-      - echo $ARCHIVE_NAME
+      - tar -czf hugo-build-${CI_BUILD_NUMBER}.tar.gz public/
+      - echo hugo-build-${CI_BUILD_NUMBER}.tar.gz
     trigger:
       event:
         - tag
@@ -40,7 +37,7 @@ steps:
     environment:
       <<: *env
     commands:
-      - aws s3 cp $ARCHIVE_NAME s3://restaurant-drone-releases-bucket/releases/
+      - aws s3 cp "hugo-build-${CI_BUILD_NUMBER}.tar.gz" s3://restaurant-drone-releases-bucket/releases/
     trigger:
       event:
         - tag
