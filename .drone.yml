@@ -62,4 +62,3 @@ steps:
       - aws s3 sync release_content/ s3://${SITE_BUCKET}/ --delete --exclude ".DS_Store"
     when:
       event: promote
-      branch: master
