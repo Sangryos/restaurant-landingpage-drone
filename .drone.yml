@@ -8,19 +8,12 @@ steps:
     image: peaceiris/hugo:v0.65.3-mod
     environment:
       <<: *hugo_env
-      AWS_SESSION_TOKEN:
-        from_secret: aws_session_token
-      AWS_ACCESS_KEY_ID:
-        from_secret: aws_access_key_id
-      AWS_SECRET_KEY:
-        from_secret: aws_secret_access_key
     commands:
       - hugo --baseURL $BASE_URL
       - ls public
-      - echo $AWS_ACCESS_KEY_ID
 
   - name: publish-website-s3
-    image: plugins/s3
+    image: amazon/aws-cli
     environment:
       AWS_SESSION_TOKEN:
         from_secret: aws_session_token
@@ -29,13 +22,13 @@ steps:
       AWS_SECRET_KEY:
         from_secret: aws_secret_access_key
 
-    settings:
-      bucket: restaurant-drone-bucket
-      region: us-east-1
-      source: public/**/*
-      target: /
-      acl: public-read
-      access_key:
-        from_secret: aws_access_key_id
-      secret_key:
-        from_secret: aws_secret_access_key
+    commands:
+      # Configuration et synchronisation
+      # 1. Définit la région par défaut.
+      - export AWS_DEFAULT_REGION="us-east-1" # <--- METTEZ VOTRE RÉGION ICI (ex: eu-west-3)
+
+      # 2. Synchronise le contenu du dossier local (public/) vers le bucket S3.
+      # --delete : Supprime les fichiers dans S3 qui n'existent plus localement.
+      # --acl public-read : Rendre les fichiers publiquement accessibles.
+      # --exclude ".DS_Store" : Exclure les fichiers inutiles.
+      - aws s3 sync public/ s3://restaurant-drone-bucket/ --delete --acl public-read --exclude ".DS_Store"
