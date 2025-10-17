@@ -20,22 +20,20 @@ steps:
     when:
       event: push
       branch: master
-
   - name: archive-release
     image: amazon/aws-cli
     environment:
-      BUILD_TIMESTAMP: $(date +%Y%m%d-%H%M%S)
       <<: *env
     commands:
       - export AWS_DEFAULT_REGION="us-east-1"
       - export ARCHIVE_NAME="hugo-build-${BUILD_TIMESTAMP}.tar.gz"
+      - export BUILD_TIMESTAMP=$(date +%Y%m%d-%H%M%S)
       - tar -czf $ARCHIVE_NAME public/
-      - echo "Archive created: $ARCHIVE_NAME"
+      - echo $ARCHIVE_NAME
       - aws s3 cp $ARCHIVE_NAME s3://restaurant-drone-releases-bucket/releases/
     when:
       event: tag
       branch: master
-
   - name: publish-website-s3
     image: amazon/aws-cli
     environment:
