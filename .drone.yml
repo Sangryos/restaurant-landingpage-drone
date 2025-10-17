@@ -8,15 +8,27 @@ steps:
     image: peaceiris/hugo:v0.65.3-mod
     environment:
       <<: *hugo_env
+      AWS_SESSION_TOKEN:
+        from_secret: aws_session_token
+      AWS_ACCESS_KEY_ID:
+        from_secret: aws_access_key_id
+      AWS_SECRET_KEY:
+        from_secret: aws_secret_access_key
     commands:
       - hugo --baseURL $BASE_URL
       - ls public
+      - echo $AWS_ACCESS_KEY_ID
 
   - name: publish-website-s3
     image: plugins/s3
     environment:
       AWS_SESSION_TOKEN:
         from_secret: aws_session_token
+      AWS_ACCESS_KEY_ID:
+        from_secret: aws_access_key_id
+      AWS_SECRET_KEY:
+        from_secret: aws_secret_access_key
+
     settings:
       bucket: restaurant-drone-bucket
       region: us-east-1
