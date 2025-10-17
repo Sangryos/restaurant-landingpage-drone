@@ -21,7 +21,6 @@ steps:
       event:
         - push
         - tag
-      branch: master
   - name: archive-release
     image: amazon/aws-cli
     environment:
