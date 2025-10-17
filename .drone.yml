@@ -23,55 +23,34 @@ steps:
         - tag
         - push
 ##### ARCHIVE RELEASE ######
-  - name: archive-create
-    image: alpine/git:latest
-    environment:
-      <<: *env
-    commands:
-      - tar -czf hugo-build-${CI_BUILD_NUMBER}.tar.gz public/
-      - echo hugo-build-${CI_BUILD_NUMBER}.tar.gz
-    when:
-      event:
-        - tag
-
   - name: archive-release
     image: amazon/aws-cli
     environment:
       <<: *env
     commands:
+      - yum install -y zip
+      - yum install -y tar
+      - tar -czf hugo-build-${CI_BUILD_NUMBER}.tar.gz public/
+      - echo hugo-build-${CI_BUILD_NUMBER}.tar.gz
       - aws s3 cp "hugo-build-${CI_BUILD_NUMBER}.tar.gz" s3://restaurant-drone-releases-bucket/releases/
     when:
       event:
         - tag
 
 ##### DEPLOY ######
-  - name: get-website-s3-release
-    image: amazon/aws-cli
-    environment:
-      <<: *env
-    commands:
-      - export AWS_DEFAULT_REGION="us-east-1"
-      - LATEST_RELEASE=$(aws s3 ls s3://restaurant-drone-releases-bucket/releases/ --recursive | sort | tail -n 1 | awk '{print $4}')
-      - aws s3 cp s3://restaurant-drone-releases-bucket/$LATEST_RELEASE ./release.tar.gz
-    when:
-      event: promote
-
-  - name: untar-website-s3
-    image: alpine/git:latest
-    environment:
-      <<: *env
-    commands:
-      - mkdir release_content
-      - tar -xzf release.tar.gz -C release_content --strip-components=1
-      - ls release_content/
-    when:
-      event: promote
-
   - name: publish-website-s3
     image: amazon/aws-cli
     environment:
       <<: *env
     commands:
+      - yum install -y zip
+      - yum install -y tar
+      - export AWS_DEFAULT_REGION="us-east-1"
+      - LATEST_RELEASE=$(aws s3 ls s3://restaurant-drone-releases-bucket/releases/ --recursive | sort | tail -n 1 | awk '{print $4}')
+      - aws s3 cp s3://restaurant-drone-releases-bucket/$LATEST_RELEASE ./release.tar.gz
+      - mkdir release_content
+      - tar -xzf release.tar.gz -C release_content --strip-components=1
+      - ls release_content/
       - aws s3 sync release_content/ s3://restaurant-drone-bucket/ --delete --exclude ".DS_Store"
     when:
       event: promote
