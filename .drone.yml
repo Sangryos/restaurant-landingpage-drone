@@ -49,11 +49,10 @@ steps:
       <<: *env
     commands:
       - export AWS_DEFAULT_REGION="us-east-1"
-      - export RELEASE_BUCKET="restaurant-drone-releases-bucket"
       - export SITE_BUCKET="restaurant-drone-bucket"
-      - LATEST_RELEASE=$(aws s3 ls s3://${RELEASE_BUCKET}/releases/ --recursive | sort | tail -n 1 | awk '{print $4}')
+      - LATEST_RELEASE=$(aws s3 ls s3://restaurant-drone-releases-bucket/releases/ --recursive | sort | tail -n 1 | awk '{print $4}')
       - if [ -z "$LATEST_RELEASE" ]; then echo "❌ No release found in S3 archive bucket!"; exit 1; fi
-      - aws s3 cp s3://${RELEASE_BUCKET}/$LATEST_RELEASE ./release.tar.gz
+      - aws s3 cp s3://restaurant-drone-releases-bucket/$LATEST_RELEASE ./release.tar.gz
       - apk update
       - apk add --no-cache tar
       - mkdir release_content
