@@ -29,18 +29,20 @@ steps:
     commands:
       - tar -czf hugo-build-${CI_BUILD_NUMBER}.tar.gz public/
       - echo hugo-build-${CI_BUILD_NUMBER}.tar.gz
-    trigger:
+    when:
       event:
         - tag
+
   - name: archive-release
     image: amazon/aws-cli
     environment:
       <<: *env
     commands:
       - aws s3 cp "hugo-build-${CI_BUILD_NUMBER}.tar.gz" s3://restaurant-drone-releases-bucket/releases/
-    trigger:
+    when:
       event:
         - tag
+
   - name: publish-website-s3
     image: amazon/aws-cli
     environment:
