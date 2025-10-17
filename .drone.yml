@@ -22,6 +22,7 @@ steps:
       event:
         - tag
         - push
+
 ##### ARCHIVE RELEASE ######
   - name: archive-create
     image: alpine/git:latest
