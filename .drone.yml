@@ -17,10 +17,11 @@ steps:
     commands:
       - hugo --baseURL $BASE_URL
       - ls public
-    when:
+    trigger:
       event:
-        - push
         - tag
+        - push
+
   - name: archive-release
     image: amazon/aws-cli
     environment:
@@ -32,9 +33,10 @@ steps:
       - tar -czf $ARCHIVE_NAME public/
       - echo $ARCHIVE_NAME
       - aws s3 cp $ARCHIVE_NAME s3://restaurant-drone-releases-bucket/releases/
-    when:
-      event: tag
-      branch: master
+    trigger:
+      event:
+        - tag
+
   - name: publish-website-s3
     image: amazon/aws-cli
     environment:
