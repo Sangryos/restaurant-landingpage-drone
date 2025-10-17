@@ -15,7 +15,8 @@ steps:
   - name: publish-website-s3
     image: plugins/s3
     environment:
-      from_secret: aws_session_token
+      AWS_SESSION_TOKEN:
+        from_secret: aws_session_token
     settings:
       bucket: restaurant-drone-bucket
       region: us-east-1
