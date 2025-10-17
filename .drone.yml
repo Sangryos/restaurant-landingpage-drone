@@ -1,5 +1,5 @@
 hugo_env: &hugo_env
-  BASE_URL: https://${DRONE_REPO_OWNER,,}.github.io/${DRONE_REPO_NAME}/
+  BASE_URL: http://restaurant-drone-bucket.s3-website-us-east-1.amazonaws.com
 
 kind: pipeline
 name: hugo-website
