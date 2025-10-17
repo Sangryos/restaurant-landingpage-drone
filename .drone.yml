@@ -49,7 +49,6 @@ steps:
       <<: *env
     commands:
       - export AWS_DEFAULT_REGION="us-east-1"
-      - export SITE_BUCKET="restaurant-drone-bucket"
       - LATEST_RELEASE=$(aws s3 ls s3://restaurant-drone-releases-bucket/releases/ --recursive | sort | tail -n 1 | awk '{print $4}')
       - aws s3 cp s3://restaurant-drone-releases-bucket/$LATEST_RELEASE ./release.tar.gz
     when:
@@ -71,6 +70,6 @@ steps:
     environment:
       <<: *env
     commands:
-      - aws s3 sync release_content/ s3://${SITE_BUCKET}/ --delete --exclude ".DS_Store"
+      - aws s3 sync release_content/ s3://restaurant-drone-bucket/ --delete --exclude ".DS_Store"
     when:
       event: promote
