@@ -10,6 +10,7 @@ env: &env
 kind: pipeline
 name: hugo-website
 steps:
+##### BUILD ######
   - name: hugo-build
     image: peaceiris/hugo:v0.65.3-mod
     environment:
@@ -21,7 +22,7 @@ steps:
       event:
         - tag
         - push
-
+##### ARCHIVE RELEASE ######
   - name: archive-create
     image: alpine/git:latest
     environment:
@@ -43,6 +44,7 @@ steps:
       event:
         - tag
 
+##### DEPLOY ######
   - name: get-website-s3-release
     image: amazon/aws-cli
     environment:
